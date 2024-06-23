@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <ParentComponent @show-posts="showPosts" @show-todos="showTodos">
       <template v-if="selectedMenu === 'posts'">
         <PostsComponent
@@ -21,9 +21,6 @@
           @update-task="updateTask"
           @delete-task="deleteTask"
         />
-      </template>
-      <template v-else-if="selectedMenu === 'albums'">
-        <router-view></router-view>
       </template>
     </ParentComponent>
   </div>
@@ -51,20 +48,14 @@ export default {
       newTask: '',
       showIncomplete: true,
       loading: true
-    };
+    }
   },
   methods: {
-    showPosts() {
-      this.selectedMenu = 'posts';
-    },
-    showTodos() {
-      this.selectedMenu = 'todos';
-    }
-    // Add other methods as needed
+    // your methods here
   }
-};
+}
 </script>
 
 <style>
-/* Your global styles here */
+/* Your CSS styles here */
 </style>
