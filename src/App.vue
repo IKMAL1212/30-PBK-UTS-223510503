@@ -1,178 +1,85 @@
 <template>
-  <div class="main-container">
-    <nav class="navbar">
-      <ul class="nav-list">
-        <li :class="{ active: selectedMenu === 'todos' }">
-          <router-link to="/todos" class="nav-link">Todos</router-link>
-        </li>
-        <li :class="{ active: selectedMenu === 'posts' }">
-          <router-link to="/posts" class="nav-link">Posts</router-link>
-        </li>
-        <li :class="{ active: selectedMenu === 'albums' }">
-          <router-link to="/albums" class="nav-link">Albums</router-link>
-        </li>
-      </ul>
-    </nav>
+  <q-layout view="hHh lpR fFf" class="app-layout">
+    <q-header class="header">
+      <q-toolbar>
+        <q-btn-group flat class="route-nav">
+          <router-link to="/" exact active-class="active-link">
+            <q-btn flat dense :class="isActive('/')">Todos</q-btn>
+          </router-link>
+          <router-link to="/post" active-class="active-link">
+            <q-btn flat dense :class="isActive('/post')">Post</q-btn>
+          </router-link>
+          <router-link to="/albums" active-class="active-link">
+            <q-btn flat dense :class="isActive('/albums')">Albums</q-btn>
+          </router-link>
+        </q-btn-group>
+      </q-toolbar>
+    </q-header>
 
-    <div class="content">
-      <router-view v-if="!selectedMenu"></router-view>
-      <PostsComponent v-else-if="selectedMenu === 'posts'" :users="users" :selectedUser="selectedUser" :userPosts="userPosts" @fetch-posts="fetchPosts" />
-      <TodosComponent v-else-if="selectedMenu === 'todos'" :tasks="tasks" :newTask="newTask" :incompleteTasks="incompleteTasks" :showIncomplete="showIncomplete" />
-      <AlbumsComponent v-else-if="selectedMenu === 'albums'" :albums="albums" :newAlbum="newAlbum" @add-album="addAlbum" @edit-album="editAlbum" @update-album="updateAlbum" @cancel-album="cancelAlbum" @delete-album="deleteAlbum" />
-    </div>
-
-    <!-- Animasi teks Selamat Datang -->
-    <div class="welcome-text" v-if="!selectedMenu">Selamat Datang Bos Quu :)</div>
-
-    <!-- Animasi teks Silakan Pilih -->
-    <div class="choose-text" v-if="!selectedMenu">Silakan Klik Menu Diatas</div>
-  </div>
+    <q-page-container>
+      <q-page>
+        <router-view />
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import PostsComponent from './components/PostsComponent.vue';
-import TodosComponent from './components/TodosComponent.vue';
-import AlbumsComponent from './views/Albums.vue'; // Pastikan ini mengarah ke komponen yang benar
 
-const selectedMenu = ref('');
-const users = ref([]);
-const selectedUser = ref(null);
-const userPosts = ref([]);
-const tasks = ref([]);
-const newTask = ref('');
-const incompleteTasks = ref([]);
-const showIncomplete = ref(true);
-const albums = ref([]);
-const newAlbum = ref('');
+<script>
+import { useRoute } from 'vue-router';
 
-const showAlbums = () => { selectedMenu.value = 'albums'; };
-const showPosts = () => { selectedMenu.value = 'posts'; };
-const showTodos = () => { selectedMenu.value = 'todos'; };
-
-const addAlbum = () => {
-  if (newAlbum.value.trim() !== '') {
-    albums.value.push({ title: newAlbum.value, editing: false });
-    newAlbum.value = '';
+export default {
+  setup() {
+    const route = useRoute();
+    const isActive = (path) => route.path === path;
+    return {
+      isActive
+    };
   }
-};
-
-const cancelAlbum = (index) => {
-  albums.value[index].editing = false;
-};
-
-const editAlbum = (index) => {
-  albums.value[index].editing = true;
-};
-
-const updateAlbum = (index) => {
-  albums.value[index].editing = false;
-};
-
-const deleteAlbum = (index) => {
-  albums.value.splice(index, 1);
-};
-
-// Method to fetch posts
-const fetchPosts = () => {
-  // Example implementation (replace with your actual fetching logic)
-  console.log('Fetching posts...');
-  // Assume posts are fetched and stored in `userPosts`
-  userPosts.value = [
-    { id: 1, title: 'Post 1' },
-    { id: 2, title: 'Post 2' },
-    // Add more posts as needed
-  ];
 };
 </script>
 
 <style scoped>
-.main-container {
-  background-image: url('../src/assets/gunung.png');
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgb(238, 180, 93);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
+.app-layout {
+  background-image: url('../src/assets/gunung.png'); /* Ganti dengan path gambar latar belakang Anda */
+  background-size: cover; /* Menyesuaikan ukuran gambar agar mengisi seluruh area */
+  background-position: center; /* Posisi gambar latar belakang di tengah-tengah */
+  background-repeat: no-repeat; /* Menghindari pengulangan gambar */
 }
 
-.nav-list {
-  display: flex;
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+/* Gaya lainnya */
+.header {
+  background-color: rgba(221, 144, 51, 0.8); /* Warna latar belakang header dengan transparansi */
+  color: #000; /* Warna teks */
+  padding: 10px; /* Padding di sekitar header */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow untuk efek elevasi */
+  display: flex; /* Mengatur posisi tombol di kanan */
+  justify-content: space-between;
 }
 
-.nav-list li {
-  flex: 1;
+.route-nav {
+  display: flex; /* Menampilkan tombol navigasi dalam baris */
 }
 
-.nav-link {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 14px 20px;
-  text-decoration: none;
-  color: black;
-  position: relative;
+.route-nav q-btn {
+  font-size: 16px; /* Ukuran font */
+  text-transform: uppercase; /* Mengubah teks menjadi huruf kapital */
+  transition: color 0.3s; /* Animasi perubahan warna */
+  font-weight: bold; /* Menjadikan font tebal */
+  margin: 0 10px; /* Memberi jarak antar tombol */
 }
 
-.nav-link:hover {
-  background-color: #e2e2e2;
+.route-nav q-btn:hover {
+  color: #ffc0cb; /* Warna teks saat tombol dihover */
 }
 
-.active .nav-link {
-  background-color: #e6e6e6;
+.q-btn-active {
+  color: #ffc0cb; /* Warna teks saat tombol aktif */
+  border-bottom: 2px solid #ffc0cb; /* Garis bawah saat tombol aktif */
 }
 
-.nav-link::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 3px;
-  background-color: #000;
-  transition: width 0.3s ease-out, left 0.3s ease-out;
-}
-
-.nav-link:hover::before {
-  width: 100%;
-  left: 0;
-}
-
-.content {
-  margin-top: 50px;
-}
-
-.welcome-text,
-.choose-text {
-  text-align: center;
-  color: rgb(0, 0, 0);
-  font-size: 36px;
-  margin-top: 20px;
-  opacity: 0;
-  animation: fadeInUp 1s forwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.text-black {
+  color: #000; /* Warna teks hitam */
 }
 </style>
+
